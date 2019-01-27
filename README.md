@@ -53,6 +53,6 @@ Simpson College Computer Science
 http://programarcadegames.com/
 http://simpson.edu/computer-science/
 
-Based on PyTorch's tutorial for a RNN:
+PyTorch's tutorial for a RNN:
 
 https://pytorch.org/tutorials/intermediate/char_rnn_generation_tutorial.html
