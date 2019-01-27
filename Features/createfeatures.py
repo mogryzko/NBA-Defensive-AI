@@ -1,8 +1,7 @@
 import os
 import sys
-sys.path.append('/Users/mogryzko/PycharmProjects/NBA_LSTM/')
-# TODO: create egg file so that this ^ is not necessary
-#TODO: or use import glob
+sys.path.append('/Users/mogryzko/PycharmProjects/NBA-Defensive-AI/')
+# ^Replace with path to your directory
 import fnmatch
 import json
 import pandas as pd
