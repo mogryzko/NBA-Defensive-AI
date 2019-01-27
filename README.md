@@ -10,7 +10,7 @@ pip install -r requirements.txt
 
 ### To create features for a specific player
 
-Open /Features/createfeatures.py and add the filepath of where you saved the repo, where it is specified
+Open /Features/createfeatures.py and add the filepath of where you saved the repo
 
 ```
 python Features/createfeatures.py [Player_Name] [Teamid (BOS, WAS, etc.)]
