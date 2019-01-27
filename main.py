@@ -11,8 +11,7 @@ import matplotlib.animation as anim
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument("playerid")
-#parser.add_argument("playerid2", nargs = '?')
+parser.add_argument("player_w_underscore")
 parser.add_argument("speed", nargs='?')
 parser.add_argument('train', nargs='?')
 args = parser.parse_args()
@@ -31,12 +30,15 @@ if args.train: init_train = True
 input_tensors = []
 gold_values = []
 
+
+
 dfs = []
-hardcoded_ids = [2754,101108,201143,201567]
-#df = pd.read_csv('data/csv/' + args.playerid + '.csv')
+
+hardcoded_ids = [args.player_w_underscore]
 for id in hardcoded_ids:
-    df1 = pd.read_csv('data/csv/' + str(id) + '.csv')
+    df1 = pd.read_csv('data/csv/' + id + '.csv')
     dfs.append(df1)
+
 
 
 for df in dfs:
@@ -120,7 +122,6 @@ def train(input_tensor, gold_value):
             # further from basket than ball handler
             l *= 10
         '''
-
 
         loss += l
 
@@ -208,6 +209,36 @@ def predict(input_tensors, gold_values):
 
         return diff, len(input_tensors), bh_xy, piq_xy, piq_gold
 
+def init():
+    line.set_offsets([])
+    return line,
+
+def animate(i, num_frames):
+    colors = []
+    x_positions = []
+    y_positions = []
+    count = 0
+    for player_coord in player_coords:
+        x = player_coord[i][0]
+        y = player_coord[i][1]
+        x_positions.append(x)
+        y_positions.append(y)
+        if count == 0:
+            colors.append('black')
+        elif count == 1:
+            colors.append('red')
+        elif count == 2:
+            colors.append('gold')
+        count += 1
+    x_positions = np.asarray(x_positions)
+    y_positions = np.asarray(y_positions)
+    positions = np.vstack((x_positions, y_positions)).T
+    line.set_offsets(positions)
+    line.set_color(c=colors)
+    if i == num_frames-1:
+        plt.close()
+    return line,
+
 
 ########################
 
@@ -257,76 +288,38 @@ if init_train:
             plt.draw()
             plt.pause(0.0001)
 
-    torch.save(rnn.state_dict(), './data/' + args.playerid + "test" + '.model')
+    torch.save(rnn.state_dict(), './data/' + args.player_w_underscore + '.model')
 
 else:
 
     rnn = LSTM(12, 300, 2)
-    rnn.load_state_dict(torch.load('./data/' + args.playerid  + "test" + '.model'))
+    rnn.load_state_dict(torch.load('./data/' + args.player_w_underscore + '.model'))
 
     num_test_examples = 100
-    total_diff = 0
-    total_frames = 0
 
-    with torch.no_grad():
 
-        '''
-        for i in range(num_test_examples):
-            ex_input, ex_gold = randomTrainingExample()
-            diff,num_frames = predict(ex_input,ex_gold)
-            total_diff += diff
-            total_frames += num_frames
-        '''
-        ex_input, ex_gold = torch.tensor([0]),torch.tensor([0])
-        while float(ex_input.size()[0]) < 100:
-            ex_input, ex_gold = randomTrainingExample()
-        diff, num_frames, bh_xy, piq_xy, piq_gold = predict(ex_input, ex_gold)
-
-    # print(total_diff/num_test_examples, total_frames/num_test_examples)
-
-    court = plt.imread('halfcourt.png')
-    fig = plt.figure(figsize=(15, 11.5))
-    ax = plt.axes(xlim=(-10, 60), ylim=(-10, 60))
-    line = ax.scatter([], [], s=50)
-    colors = []
-
-    assert(len(bh_xy) == len(piq_xy) == len(piq_gold))
-
-    player_coords = [bh_xy,piq_xy,piq_gold]
-
-    def init():
-        line.set_offsets([])
-        return line,
-
-    def animate(i):
+    for i in range(3):
+        court = plt.imread('halfcourt.png')
+        fig = plt.figure(figsize=(15, 11.5))
+        ax = plt.axes(xlim=(-10, 60), ylim=(-10, 60))
+        line = ax.scatter([], [], s=50)
         colors = []
-        x_positions = []
-        y_positions = []
-        count = 0
-        for player_coord in player_coords:
-            x = player_coord[i][0]
-            y = player_coord[i][1]
-            x_positions.append(x)
-            y_positions.append(y)
-            if count == 0:
-                colors.append('black')
-            elif count == 1:
-                colors.append('red')
-            elif count == 2:
-                colors.append('gold')
-            count += 1
-        x_positions = np.asarray(x_positions)
-        y_positions = np.asarray(y_positions)
-        positions = np.vstack((x_positions, y_positions)).T
-        line.set_offsets(positions)
-        line.set_color(c=colors)
-        return line,
+
+        with torch.no_grad():
+            ex_input, ex_gold = torch.tensor([0]),torch.tensor([0])
+            while float(ex_input.size()[0]) < num_test_examples:
+                ex_input, ex_gold = randomTrainingExample()
+            diff, num_frames, bh_xy, piq_xy, piq_gold = predict(ex_input, ex_gold)
+
+        assert(len(bh_xy) == len(piq_xy) == len(piq_gold))
+
+        player_coords = [bh_xy,piq_xy,piq_gold]
 
 
-    animation = anim.FuncAnimation(fig, animate, init_func=init, frames=num_frames, interval=10, blit=True)
+        animation = anim.FuncAnimation(fig, animate, init_func=init, frames=num_frames, fargs=[num_frames], interval=50, repeat=False, blit=True)
 
-    plt.imshow(court, zorder=0, extent=[0, 47, 50, 0])
-    plt.show()
+        plt.imshow(court, zorder=0, extent=[0, 47, 50, 0])
+        plt.show()
 
 
 

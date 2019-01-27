@@ -1,4 +1,6 @@
 """
+ Based on:
+
  Pygame base template
 
  Sample Python/Pygame Programs
@@ -16,7 +18,7 @@ import time
 import math
 
 parser = argparse.ArgumentParser()
-parser.add_argument("playerid")
+parser.add_argument("player_w_underscore")
 args = parser.parse_args()
 
 # Define some colors
@@ -99,7 +101,7 @@ while not done:
 
 
     rnn = LSTM(12, 300, 2)
-    rnn.load_state_dict(torch.load('./data/' + args.playerid  + "test"+'.model'))
+    rnn.load_state_dict(torch.load('./data/' + args.player_w_underscore + '.model'))
 
 
 

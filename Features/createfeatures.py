@@ -10,7 +10,7 @@ import utils.FeatureFunctions as ff
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument("playerid")
+parser.add_argument("player_w_underscore")
 parser.add_argument("team")
 args = parser.parse_args()
 
@@ -120,6 +120,9 @@ playerids = {'Pau Gasol': 2200, 'Tibor Pleiss': 202353, 'George Hill': 201588, '
               'Terrence Jones': 203093, 'Boban Marjanovic': 1626246, 'Jeremy Lin': 202391, 'Gary Harris': 203914,
               'Alexis Ajinca': 201582, 'Rashad Vaughn': 1626173, 'Paul George': 202331, 'CJ Miles': 101139}
 
+player = args.player_w_underscore.replace("_"," ")
+playerid = playerids[player]
+
 
 def getFeaturesFromFile(filename):
     file = open(filename, 'r')
@@ -132,10 +135,10 @@ def getFeaturesFromFile(filename):
     # go through all events and look for iso defensive play
     for event in events:
         if len(event['moments']) == 0: continue
-        new_event = ff.Event(event, int(args.playerid), teamids[args.team])
+        new_event = ff.Event(event, int(playerid), teamids[args.team])
         player_in_event = False
-        for playerid in new_event.players_in_event:
-            if playerid == int(args.playerid): player_in_event = True
+        for playeridinevent in new_event.players_in_event:
+            if playeridinevent == int(playerid): player_in_event = True
         if not player_in_event:
             print('Finished Event: ' + str(counter))
             counter += 1
@@ -167,7 +170,7 @@ if __name__ == '__main__':
             os.system("rm *.json")
 
     pd_list = pd.DataFrame(to_csv, columns=movement_headers)
-    pd_list.to_csv('../data/csv/' + args.playerid + '.csv', index=False)
+    pd_list.to_csv('../data/csv/' + args.player_w_underscore + '.csv', index=False)
 
 
 
