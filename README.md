@@ -45,7 +45,9 @@ python game.py [Player_Name]
 use arrow keys to play!
 
 ### Acknowledgements 
-
+Bhostgusters: Realtime Interactive Play Sketching
+with Synthesized NBA Defenses
+Thomas Seidl, Aditya Cherukumudi, Andrew Hartnett, Peter Carr, Patrick Lucey
 
 Sample Python/Pygame Programs:
 
